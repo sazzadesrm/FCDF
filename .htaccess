@@ -1,0 +1,43 @@
+# ============================================================================
+# FCDF Pro — Root .htaccess (flat deployment layout)
+# ============================================================================
+# This project's Document Root IS this folder (no separate /public
+# subfolder). That means src/, storage/, .env, database.sql, and other
+# sensitive files live in the SAME directory the web server serves from.
+# The rules below are critical — they block direct browser access to
+# everything except the actual public assets (index.php, install.php,
+# assets/, uploads/).
+# ============================================================================
+
+# ---- 1. Block sensitive files by extension, anywhere in this folder ----
+<FilesMatch "\.(env|sql|json|lock|md|log|gitignore|gitattributes)$">
+    Require all denied
+</FilesMatch>
+
+# ---- 2. Block dotfiles explicitly (.env, .gitignore, .htaccess itself, etc.) ----
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# ---- 3. Block the application source and storage folders entirely ----
+RewriteEngine On
+RewriteRule ^(src|storage)/ - [F,L]
+RewriteRule ^(src|storage)$ - [F,L]
+
+# ---- 4. Disable directory listing everywhere ----
+Options -Indexes
+
+# ---- 5. Pretty URL routing: everything else goes through index.php ----
+# (Real files/folders — assets/, uploads/, install.php — are served as-is;
+# everything else is routed as ?route=... for the app's own router.)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?route=$1 [QSA,L]
+
+# ---- 6. Security headers ----
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

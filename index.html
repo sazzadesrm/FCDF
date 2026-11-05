@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f2">
+  <title>Little List — A calmer to-do list</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f5f6f2;
+      --surface: #fff;
+      --ink: #20251f;
+      --muted: #81877f;
+      --line: #e9ebe5;
+      --accent: #527b5d;
+      --accent-dark: #3e6349;
+      --accent-soft: #edf3ec;
+      --danger: #b34f45;
+      --shadow: 0 22px 65px rgb(34 45 34 / 8%), 0 2px 8px rgb(34 45 34 / 4%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #171a17;
+        --surface: #202420;
+        --ink: #edf0ea;
+        --muted: #a0a79e;
+        --line: #343a34;
+        --accent: #8eb694;
+        --accent-dark: #a4c9a8;
+        --accent-soft: #2a382c;
+        --danger: #e28d82;
+        --shadow: 0 22px 65px rgb(0 0 0 / 24%), 0 2px 8px rgb(0 0 0 / 14%);
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      padding: 72px 20px 48px;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgb(222 231 216 / 54%), transparent 48%),
+        var(--page);
+      color: var(--ink);
+      font-size: 15px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background:
+          radial-gradient(ellipse at 50% 0%, rgb(62 82 62 / 26%), transparent 48%),
+          var(--page);
+      }
+    }
+
+    .app {
+      width: min(100%, 480px);
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 38px;
+      color: var(--accent-dark);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .045em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+      border-radius: 9px;
+      background: var(--accent-soft);
+    }
+
+    .brand-mark svg { width: 15px; height: 15px; }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(36px, 9vw, 46px);
+      font-weight: 500;
+      letter-spacing: -.055em;
+      line-height: 1.08;
+    }
+
+    .intro {
+      margin: 12px 0 28px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .card {
+      overflow: hidden;
+      border: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .add-form {
+      display: flex;
+      gap: 10px;
+      padding: 17px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .add-form input {
+      width: 100%;
+      min-width: 0;
+      height: 44px;
+      padding: 0 13px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      outline: none;
+      background: var(--page);
+      color: var(--ink);
+      font: inherit;
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    .add-form input::placeholder { color: var(--muted); opacity: .8; }
+    .add-form input:focus {
+      border-color: var(--accent);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+
+    .add-button {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-width: 88px;
+      height: 44px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 650;
+      transition: background .18s ease, transform .18s ease;
+    }
+
+    .add-button:hover { background: var(--accent-dark); }
+    .add-button:active { transform: scale(.97); }
+    .add-button svg { width: 16px; height: 16px; }
+
+    .list { margin: 0; padding: 4px 17px; list-style: none; }
+
+    .task {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 62px;
+      border-bottom: 1px solid var(--line);
+      animation: arrive .28s ease both;
+    }
+
+    .task:last-child { border-bottom: 0; }
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .task-check {
+      position: relative;
+      flex: 0 0 auto;
+      width: 21px;
+      height: 21px;
+      margin: 0;
+      appearance: none;
+      border: 1.5px solid #c8cec5;
+      border-radius: 7px;
+      background: transparent;
+      cursor: pointer;
+      transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    }
+
+    .task-check:hover { border-color: var(--accent); }
+    .task-check:focus-visible, .delete-button:focus-visible, .add-button:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+      outline-offset: 3px;
+    }
+
+    .task-check:checked {
+      transform: scale(1.04);
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+
+    .task-check::after {
+      position: absolute;
+      top: 3px;
+      left: 6px;
+      width: 5px;
+      height: 9px;
+      transform: rotate(45deg) scale(.5);
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      content: "";
+      opacity: 0;
+      transition: opacity .16s ease, transform .2s cubic-bezier(.2, .8, .2, 1.3);
+    }
+
+    .task-check:checked::after { transform: rotate(45deg) scale(1); opacity: 1; }
+
+    .task-label {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+      transition: color .22s ease;
+    }
+
+    .task-label::after {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--muted);
+      content: "";
+      transition: width .24s ease;
+    }
+
+    .task.is-complete .task-label { color: var(--muted); }
+    .task.is-complete .task-label::after { width: 100%; }
+
+    .delete-button {
+      display: grid;
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      opacity: .55;
+      transition: color .18s ease, background .18s ease, opacity .18s ease, transform .18s ease;
+    }
+
+    .delete-button:hover {
+      transform: scale(1.04);
+      background: color-mix(in srgb, var(--danger) 11%, transparent);
+      color: var(--danger);
+      opacity: 1;
+    }
+
+    .delete-button svg { width: 17px; height: 17px; }
+
+    .empty-state {
+      padding: 36px 16px 38px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .empty-state svg { width: 27px; height: 27px; margin-bottom: 8px; color: var(--accent); }
+    .empty-state p { margin: 0; font-size: 14px; }
+    .empty-state strong { display: block; margin-bottom: 5px; color: var(--ink); font-size: 15px; }
+
+    .list-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 54px;
+      padding: 0 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .progress-track {
+      width: 78px;
+      height: 5px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: var(--line);
+    }
+
+    .progress-value {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+      transition: width .35s ease;
+    }
+
+    .storage-note {
+      min-height: 20px;
+      margin: 12px 2px 0;
+      color: var(--danger);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .footnote {
+      margin: 30px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 42px 16px 32px; }
+      .brand { margin-bottom: 31px; }
+      .add-form { gap: 8px; padding: 13px; }
+      .add-button { min-width: 46px; padding: 0 12px; }
+      .add-button span { display: none; }
+      .list { padding-right: 13px; padding-left: 13px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="brand" aria-label="Little List">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none">
+          <path d="m5 10 3.1 3.1L15.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      LITTLE LIST
+    </div>
+
+    <h1>A calmer kind of<br>to-do list.</h1>
+    <p class="intro">Make a little room for what matters today.</p>
+
+    <section class="card" aria-label="Your tasks">
+      <form class="add-form" id="add-form">
+        <label for="new-task" hidden>Add a task</label>
+        <input id="new-task" name="task" type="text" maxlength="120" placeholder="What needs doing?" autocomplete="off" required>
+        <button class="add-button" type="submit" aria-label="Add task">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span>Add task</span>
+        </button>
+      </form>
+
+      <ul class="list" id="task-list" aria-label="Tasks"></ul>
+      <div class="empty-state" id="empty-state" hidden>
+        <svg viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="m6.5 14 5 5 10-10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <strong>All clear, for now.</strong>
+        <p>Add a task whenever you're ready.</p>
+      </div>
+
+      <footer class="list-footer">
+        <span id="task-count" aria-live="polite"></span>
+        <div class="progress-track" role="progressbar" id="progress" aria-label="Tasks completed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <span class="progress-value" id="progress-value"></span>
+        </div>
+      </footer>
+    </section>
+    <p class="storage-note" id="storage-note" role="status" aria-live="polite"></p>
+    <p class="footnote">A small step is still a step.</p>
+  </main>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = "little-list-tasks-v1";
+      const examples = [
+        { id: "sample-1", text: "Take a few minutes to plan the day", completed: false },
+        { id: "sample-2", text: "Reply to the messages I've been putting off", completed: false },
+        { id: "sample-3", text: "Step outside and get some fresh air", completed: false }
+      ];
+      const list = document.getElementById("task-list");
+      const emptyState = document.getElementById("empty-state");
+      const count = document.getElementById("task-count");
+      const progress = document.getElementById("progress");
+      const progressValue = document.getElementById("progress-value");
+      const storageNote = document.getElementById("storage-note");
+      const form = document.getElementById("add-form");
+      const input = document.getElementById("new-task");
+      let tasks = examples;
+      let storageAvailable = true;
+
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved !== null) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.every(task =>
+            task && typeof task.id === "string" && typeof task.text === "string" &&
+            typeof task.completed === "boolean")) {
+            tasks = parsed;
+          } else {
+            storageNote.textContent = "Saved tasks could not be read. Your example list is shown instead.";
+          }
+        }
+      } catch {
+        storageAvailable = false;
+        storageNote.textContent = "Local storage is unavailable, so changes won't be saved after you close this page.";
+      }
+
+      function save() {
+        if (!storageAvailable) return;
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+        } catch {
+          storageAvailable = false;
+          storageNote.textContent = "Your browser couldn't save changes. They will be lost when you close this page.";
+        }
+      }
+
+      function updateSummary() {
+        const completed = tasks.filter(task => task.completed).length;
+        const total = tasks.length;
+        const percent = total ? Math.round(completed / total * 100) : 0;
+        count.textContent = `${total - completed} left · ${completed} done`;
+        progressValue.style.width = `${percent}%`;
+        progress.setAttribute("aria-valuenow", String(percent));
+        emptyState.hidden = total !== 0;
+      }
+
+      function makeTask(task) {
+        const row = document.createElement("li");
+        row.className = `task${task.completed ? " is-complete" : ""}`;
+
+        const checkbox = document.createElement("input");
+        checkbox.className = "task-check";
+        checkbox.type = "checkbox";
+        checkbox.checked = task.completed;
+        checkbox.setAttribute("aria-label", `Mark "${task.text}" ${task.completed ? "incomplete" : "complete"}`);
+        checkbox.addEventListener("change", () => {
+          task.completed = checkbox.checked;
+          row.classList.toggle("is-complete", task.completed);
+          checkbox.setAttribute("aria-label", `Mark "${task.text}" ${task.completed ? "incomplete" : "complete"}`);
+          updateSummary();
+          save();
+        });
+
+        const label = document.createElement("span");
+        label.className = "task-label";
+        label.textContent = task.text;
+
+        const remove = document.createElement("button");
+        remove.className = "delete-button";
+        remove.type = "button";
+        remove.setAttribute("aria-label", `Delete "${task.text}"`);
+        remove.innerHTML = '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 6h11M8 6V4.5h4V6m2.5 0-.6 9.5H6.1L5.5 6m3 3v4m3-4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        remove.addEventListener("click", () => {
+          tasks = tasks.filter(item => item.id !== task.id);
+          row.remove();
+          updateSummary();
+          save();
+        });
+
+        row.append(checkbox, label, remove);
+        return row;
+      }
+
+      function render() {
+        list.replaceChildren(...tasks.map(makeTask));
+        updateSummary();
+      }
+
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+        const text = input.value.trim();
+        if (!text) {
+          input.focus();
+          return;
+        }
+        tasks.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, text, completed: false });
+        const row = makeTask(tasks[tasks.length - 1]);
+        list.append(row);
+        updateSummary();
+        save();
+        form.reset();
+        input.focus();
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

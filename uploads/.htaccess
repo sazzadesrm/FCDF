@@ -1,0 +1,8 @@
+# Prevent any script execution inside the uploads folder — only static
+# image files should ever be served from here. Defense-in-depth on top of
+# the MIME-type validation already done in ProfileController::uploadAvatar().
+Options -Indexes -ExecCGI
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .pl .py .cgi .asp .sh
+<FilesMatch "\.(php|phtml|php\d|pl|py|cgi|asp|sh)$">
+    Require all denied
+</FilesMatch>

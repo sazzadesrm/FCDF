@@ -1,0 +1,17 @@
+{
+    "name": "whiplc/fcdf-pro",
+    "description": "FCDF Pro - Foreign Currency Deposit Form System (Walton Hi-Tech Industries PLC)",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

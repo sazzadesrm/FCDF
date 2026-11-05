@@ -1,0 +1,419 @@
+/* =====================================================================
+   FCDF Pro theme. SELF-CONTAINED: the first part is the app's base layout
+   rules (same as style.css, minus the login block) so the layout works
+   even if style.css fails to load; the second part is the green theme.
+   ===================================================================== */
+/* ---------- Part 1: base layout & components ---------- */
+:root {
+  --navy: #0d3b66;
+  --navy-dark: #092b4d;
+  --accent: #1d5b96;
+  --bg: #f4f6f9;
+  --border: #dfe4ea;
+  --text: #2b2f36;
+}
+
+body {
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app-title { font-weight: 700; color: var(--navy); letter-spacing: .5px; }
+
+/* Navbar */
+.app-navbar { background: var(--navy); }
+.app-navbar .navbar-brand { color: #fff !important; font-size: 1.25rem; }
+.avatar-fallback {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%; background:#ffffff33; color:#fff; font-weight:600;
+}
+
+/* Layout */
+.app-shell { display: flex; min-height: calc(100vh - 56px - 52px); }
+.app-sidebar {
+  width: 230px; background: #fff; border-right: 1px solid var(--border); flex-shrink: 0;
+}
+.sidebar-nav .nav-link { color: var(--text); padding: .65rem 1.25rem; border-left: 3px solid transparent; }
+.sidebar-nav .nav-link:hover { background: #f0f3f7; }
+.sidebar-nav .nav-link.active { background: #eaf1fb; color: var(--navy); border-left-color: var(--navy); font-weight: 600; }
+.sidebar-brand { color: var(--navy); font-size: 1.15rem; border-bottom: 1px solid var(--border); }
+.app-content { flex: 1; min-width: 0; }
+.app-footer { background: #fff; border-top: 1px solid var(--border); }
+
+@media (min-width: 992px) {
+  .app-sidebar { position: sticky; top: 56px; height: calc(100vh - 56px); }
+}
+
+/* Cards / widgets */
+.widget-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 1.1rem 1.25rem; height: 100%; }
+.widget-card .widget-label { font-size: .8rem; color: #6b7280; text-transform: uppercase; letter-spacing: .04em; }
+.widget-card .widget-value { font-size: 1.6rem; font-weight: 700; color: var(--navy); }
+.card { border-color: var(--border); }
+.card-header { background: #fbfcfd; font-weight: 600; }
+
+.table thead th { background: #f0f3f7; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; color: #556; border-bottom-width: 1px; }
+.table td, .table th { vertical-align: middle; }
+
+.btn-primary { background: var(--navy); border-color: var(--navy); }
+.btn-primary:hover { background: var(--navy-dark); border-color: var(--navy-dark); }
+.btn-outline-primary { color: var(--navy); border-color: var(--navy); }
+.btn-outline-primary:hover { background: var(--navy); border-color: var(--navy); }
+
+a { color: var(--accent); }
+
+/* Currency line rows */
+.currency-row .form-control, .currency-row .form-select { min-width: 0; }
+
+/* ---------------------------------------------------------------------
+   Select2 <-> Bootstrap 5 alignment fix. By default, Select2's rendered
+   box does not match the height/border/padding of a native Bootstrap
+   .form-control / .form-select, which is the most common cause of
+   "fields don't line up" on this kind of form. This forces Select2 to
+   match Bootstrap sizing exactly.
+--------------------------------------------------------------------- */
+.select2-container { width: 100% !important; }
+.select2-container .select2-selection--single {
+  height: calc(1.5em + 0.75rem + 2px) !important;
+  padding: 0.375rem 0.25rem;
+  border: 1px solid #ced4da !important;
+  border-radius: 0.375rem !important;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+}
+.select2-container .select2-selection--single .select2-selection__rendered {
+  line-height: 1.5 !important;
+  padding-left: 0.5rem !important;
+  padding-right: 1.5rem;
+  color: var(--text);
+}
+.select2-container .select2-selection--single .select2-selection__arrow {
+  height: calc(1.5em + 0.75rem) !important;
+  right: 6px;
+}
+.select2-container--default .select2-selection--single .select2-selection__placeholder { color: #6c757d; }
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--single {
+  border-color: #86b7fe !important;
+  box-shadow: 0 0 0 0.25rem rgba(13,59,102,.15);
+}
+.select2-dropdown { border-color: #ced4da; }
+.select2-search--dropdown .select2-search__field { border-radius: 0.375rem; padding: 0.35rem 0.5rem; }
+/* Small form-select-sm contexts (master data / filter bars) */
+.form-select-sm + .select2-container .select2-selection--single,
+.select2-container.select2-sm .select2-selection--single {
+  height: calc(1.5em + 0.5rem + 2px) !important;
+  font-size: .875rem;
+}
+
+/* Consistent vertical alignment for label + control pairs across all
+   forms (deposit form, master data, filters). */
+.form-label { margin-bottom: 0.35rem; font-weight: 500; font-size: .875rem; color: #444; }
+.row.g-3 > [class*="col-"], .row.g-2 > [class*="col-"] { display: flex; flex-direction: column; }
+.row.g-3 > [class*="col-"] > .form-control,
+.row.g-3 > [class*="col-"] > .form-select,
+.row.g-3 > [class*="col-"] > .select2-container { margin-top: auto; }
+
+/* Invoice / voucher document */
+.invoice-sheet {
+  background: #fff; border: 1px solid var(--border); max-width: 850px; margin: 0 auto;
+  padding: 28px 34px; font-size: 14px;
+}
+.invoice-sheet h2 { color: var(--navy); font-weight: 700; text-align: center; margin-bottom: 2px; }
+.invoice-sheet .org-name { text-align: center; color: #556; font-size: .85rem; margin-bottom: 18px; }
+.invoice-sheet .invoice-subheading { text-align: center; color: var(--navy); font-weight: 600; font-size: .95rem; margin-bottom: 2px; }
+
+.invoice-meta-grid .meta-item {
+  display: block; padding: 4px 6px 6px; font-size: .88rem; border-bottom: 1px dotted var(--border);
+}
+.invoice-meta-grid .meta-item .label {
+  display: block; color: #6b7280; font-size: .72rem; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 2px;
+}
+.invoice-meta-grid .meta-item .value { display: block; color: var(--text); word-break: break-word; }
+
+.invoice-currency-table th, .invoice-currency-table td { font-size: .88rem; padding: 6px 8px; white-space: nowrap; }
+.invoice-total-box { border: 1px solid var(--navy); background: #eaf1fb; padding: 10px 16px; border-radius: 6px; font-weight: 700; color: var(--navy); }
+.invoice-terms { font-size: .78rem; color: #556; border-top: 1px dashed var(--border); padding-top: 10px; margin-top: 14px; }
+.invoice-terms-list { margin-top: 4px; }
+/* Numbers rendered as literal text (not CSS list markers / ::marker),
+   because html2canvas — used for PDF/JPG/PNG export — does not reliably
+   render native <ol> counters, which was causing numbering to disappear
+   from exported and printed documents. */
+.invoice-term-item { display: flex; gap: 6px; margin-bottom: 4px; }
+.invoice-term-item .term-number { flex: 0 0 auto; font-weight: 600; min-width: 1.4em; }
+.invoice-term-item .term-text { flex: 1 1 auto; }
+.invoice-signature-row { margin-top: 40px; }
+.invoice-signature-line { border-top: 1px solid #333; margin-top: 40px; padding-top: 4px; font-size: .8rem; text-align: center; }
+.invoice-finePrint { font-size: .72rem; color: #888; text-align: center; margin-top: 18px; }
+
+/* Mobile responsiveness for the invoice/voucher */
+@media (max-width: 576px) {
+  .invoice-sheet { padding: 16px 12px; font-size: 12.5px; }
+  .invoice-sheet h2 { font-size: 1.05rem; }
+  .invoice-sheet .org-name { font-size: .75rem; }
+  .invoice-sheet .invoice-subheading { font-size: .82rem; }
+  .invoice-meta-grid .meta-item { font-size: .8rem; padding: 3px 4px; }
+  .invoice-currency-table th, .invoice-currency-table td { font-size: .78rem; padding: 5px 6px; }
+  .invoice-total-box { font-size: .85rem; width: 100%; }
+  .invoice-signature-line { margin-top: 28px; }
+  .invoice-terms { font-size: .72rem; }
+}
+
+@media print {
+  .no-print { display: none !important; }
+  .app-navbar, .app-sidebar, .app-footer { display: none !important; }
+  .app-content { width: 100%; }
+  body { background: #fff; }
+  .invoice-sheet { border: none; box-shadow: none; }
+}
+
+/* ---------------------------------------------------------------------
+   Print-as-image (see fcdfPrintAsImage in app.js). Printing now injects
+   the exact same html2canvas-rendered image used for PDF/JPG/PNG export
+   into a hidden container, then prints only that image — guaranteeing
+   Print output is pixel-identical to the exports. The image is scaled to
+   fit fully within one A4 page (object-fit: contain), matching the
+   single-page behavior of the PDF export.
+--------------------------------------------------------------------- */
+#fcdfPrintImageContainer { display: none; }
+#fcdfPrintImageContainer img { display: block; width: 100%; height: auto; }
+
+@media print {
+  body.fcdf-printing-image .invoice-sheet,
+  body.fcdf-printing-image #reportCapture,
+  body.fcdf-printing-image .app-navbar,
+  body.fcdf-printing-image .app-sidebar,
+  body.fcdf-printing-image .app-footer,
+  body.fcdf-printing-image .no-print {
+    display: none !important;
+  }
+  body.fcdf-printing-image #fcdfPrintImageContainer {
+    display: block !important;
+    width: 100%;
+  }
+  body.fcdf-printing-image #fcdfPrintImageContainer img {
+    width: 100%;
+    max-height: 273mm; /* A4 portrait content height (297mm - 2x12mm margin) */
+    object-fit: contain;
+  }
+  body.fcdf-printing-image.fcdf-print-landscape #fcdfPrintImageContainer img {
+    max-height: 186mm; /* A4 landscape content height (210mm - 2x12mm margin) */
+  }
+}
+
+@page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+
+/* ---------- Part 2: green theme ---------- */
+/* =====================================================================
+   FCDF Pro — green theme (matches the login screen)
+   Loaded after style.css; only overrides colours, type and shapes.
+   ===================================================================== */
+:root {
+  --navy: #3f5e26;
+  --navy-dark: #314a1d;
+  --accent: #3f5e26;
+  --bg: #f5f7f2;
+  --border: #e3e8dd;
+  --text: #1f2a1a;
+  --green: #3f5e26;
+  --green-dark: #314a1d;
+  --green-tint: #eaf1e3;
+  --green-soft: #f3f7ef;
+  --bs-primary: #3f5e26;
+  --bs-primary-rgb: 63, 94, 38;
+  --bs-link-color: #3f5e26;
+  --bs-link-color-rgb: 63, 94, 38;
+  --bs-link-hover-color: #314a1d;
+  --bs-body-color: #1f2a1a;
+  --bs-border-color: #e3e8dd;
+}
+
+body {
+  font-family: 'Poppins', 'Roboto', Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: .92rem;
+}
+h1, h2, h3, h4, h5, h6 { letter-spacing: -.015em; }
+.app-content h4 { font-weight: 600; font-size: 1.5rem; }
+a { color: var(--green); }
+a:hover { color: var(--green-dark); }
+.text-muted { color: #6b7280 !important; }
+
+/* ---------- Top bar ---------- */
+.app-navbar {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  min-height: 60px;
+  padding-top: 0; padding-bottom: 0;
+}
+.app-navbar .navbar-brand { display: inline-flex; align-items: center; gap: .6rem; color: var(--green) !important; font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; }
+.app-navbar .navbar-brand img { width: 38px; height: 38px; flex: 0 0 38px; object-fit: contain; }
+.app-role-pill { background: var(--green-tint); color: var(--green); font-size: .75rem; font-weight: 600; padding: .28rem .7rem; border-radius: 999px; }
+.app-user-link { color: var(--text) !important; font-weight: 500; }
+.avatar-fallback { background: var(--green); color: #fff; }
+.app-navbar .btn-outline-secondary { border-color: var(--border); color: var(--text); border-radius: 10px; }
+.dropdown-menu { border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 14px 34px rgba(31,42,26,.12); padding: .4rem; }
+.dropdown-item { border-radius: 8px; padding: .5rem .8rem; }
+.dropdown-item:hover, .dropdown-item:focus { background: var(--green-tint); color: var(--green); }
+
+/* ---------- Sidebar ---------- */
+.app-shell { min-height: calc(100vh - 60px - 56px); }
+.app-sidebar { width: 250px; background: #fff; border-right: 1px solid var(--border); }
+@media (min-width: 992px) {
+  .app-sidebar { top: 60px; height: calc(100vh - 60px); }
+}
+.sidebar-brand { display: flex; align-items: center; gap: .6rem; color: var(--green); border-bottom: 1px solid var(--border); }
+.sidebar-brand img { width: 34px; height: 34px; object-fit: contain; }
+.sidebar-nav { padding: 1rem .75rem; gap: .2rem; }
+.sidebar-nav .nav-link {
+  display: flex; align-items: center; gap: .75rem;
+  color: #4b5a42; font-weight: 500;
+  padding: .65rem .9rem;
+  border-left: 0;
+  border-radius: 12px;
+}
+.sidebar-nav .nav-link svg { width: 19px; height: 19px; flex: 0 0 19px; stroke: currentColor; }
+.sidebar-nav .nav-link:hover { background: var(--green-soft); color: var(--green); }
+.sidebar-nav .nav-link.active { background: var(--green); color: #fff; font-weight: 600; box-shadow: 0 6px 14px rgba(63,94,38,.25); }
+.sidebar-nav .nav-link:focus-visible { outline: 3px solid rgba(63,94,38,.35); outline-offset: 1px; }
+
+.app-footer { background: #fff; border-top: 1px solid var(--border); }
+
+/* ---------- Cards / widgets ---------- */
+.card { border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 1px 2px rgba(31,42,26,.04); background: #fff; overflow: hidden; }
+.card-header { background: #fff; border-bottom: 1px solid var(--border); font-weight: 600; padding: .85rem 1.15rem; }
+.card-body { padding: 1.15rem; }
+.widget-card { border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(31,42,26,.04); padding: 1.15rem 1.3rem; }
+.widget-card .widget-label { font-size: .82rem; color: #6b7280; text-transform: none; letter-spacing: 0; font-weight: 500; }
+.widget-card .widget-value { font-size: 1.65rem; font-weight: 700; color: var(--green); letter-spacing: -.02em; }
+
+/* ---------- Forms ---------- */
+.form-label { font-size: .85rem; font-weight: 500; color: var(--text); }
+.form-control, .form-select { border: 1px solid #d5d9d2; border-radius: 10px; background-color: #fff; }
+.form-control-sm, .form-select-sm { border-radius: 8px; }
+.form-control::placeholder { color: #b8bdb4; }
+.form-control:focus, .form-select:focus { border-color: var(--green); box-shadow: 0 0 0 .2rem rgba(63,94,38,.18); }
+.form-control:disabled, .form-control[readonly] { background: var(--green-soft); }
+.form-check-input:checked { background-color: var(--green); border-color: var(--green); }
+.form-check-input:focus { border-color: var(--green); box-shadow: 0 0 0 .2rem rgba(63,94,38,.18); }
+.input-group-text { border-radius: 10px; border-color: #d5d9d2; background: var(--green-soft); }
+
+/* Select2 */
+.select2-container .select2-selection--single { border-color: #d5d9d2 !important; border-radius: 10px !important; }
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--single { border-color: var(--green) !important; box-shadow: 0 0 0 .2rem rgba(63,94,38,.18); }
+.select2-dropdown { border-color: #d5d9d2; border-radius: 10px; overflow: hidden; }
+.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable { background: var(--green); color: #fff; }
+.select2-container--default .select2-results__option--selected { background: var(--green-tint); color: var(--green); }
+
+/* ---------- Buttons ---------- */
+.btn { border-radius: 10px; font-weight: 500; }
+.btn-primary {
+  --bs-btn-bg: #3f5e26; --bs-btn-border-color: #3f5e26;
+  --bs-btn-hover-bg: #314a1d; --bs-btn-hover-border-color: #314a1d;
+  --bs-btn-active-bg: #2a4018; --bs-btn-active-border-color: #2a4018;
+  --bs-btn-disabled-bg: #3f5e26; --bs-btn-disabled-border-color: #3f5e26;
+  --bs-btn-focus-shadow-rgb: 63, 94, 38;
+  background: var(--green); border-color: var(--green);
+  box-shadow: 0 4px 12px rgba(63,94,38,.22);
+}
+.btn-primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
+.btn-outline-primary {
+  --bs-btn-color: #3f5e26; --bs-btn-border-color: #3f5e26;
+  --bs-btn-hover-bg: #3f5e26; --bs-btn-hover-border-color: #3f5e26;
+  --bs-btn-active-bg: #314a1d; --bs-btn-active-border-color: #314a1d;
+  --bs-btn-focus-shadow-rgb: 63, 94, 38;
+  color: var(--green); border-color: var(--green);
+}
+.btn-outline-primary:hover { background: var(--green); border-color: var(--green); color: #fff; }
+.btn-outline-secondary { --bs-btn-color: #4b5a42; --bs-btn-border-color: #cfd6c8; --bs-btn-hover-bg: var(--green-tint); --bs-btn-hover-color: #3f5e26; --bs-btn-hover-border-color: #b9c6ad; --bs-btn-active-bg: var(--green-tint); --bs-btn-active-color: #3f5e26; --bs-btn-active-border-color: #b9c6ad; }
+.btn-success { --bs-btn-bg: #3f5e26; --bs-btn-border-color: #3f5e26; --bs-btn-hover-bg: #314a1d; --bs-btn-hover-border-color: #314a1d; }
+.btn:focus-visible { outline: 3px solid rgba(63,94,38,.35); outline-offset: 2px; box-shadow: none; }
+
+/* ---------- Tables ---------- */
+.table { --bs-table-hover-bg: var(--green-soft); --bs-table-border-color: var(--border); }
+.table thead th { background: var(--green-soft); color: #4b5a42; font-size: .78rem; font-weight: 600; text-transform: none; letter-spacing: .01em; border-bottom: 1px solid var(--border); }
+
+/* ---------- Badges, tabs, pagination, lists ---------- */
+.badge { border-radius: 999px; font-weight: 500; padding: .38em .75em; }
+.badge.bg-success { background-color: var(--green) !important; }
+.badge.bg-secondary { background-color: #8a9483 !important; }
+.nav-tabs { border-bottom: 1px solid var(--border); gap: .25rem; }
+.nav-tabs .nav-link { color: #4b5a42; border: 0; border-bottom: 2px solid transparent; border-radius: 0; font-weight: 500; }
+.nav-tabs .nav-link:hover { color: var(--green); border-bottom-color: #b9c6ad; }
+.nav-tabs .nav-link.active { color: var(--green); background: transparent; border-bottom-color: var(--green); font-weight: 600; }
+.page-link { color: var(--green); border-color: var(--border); }
+.page-link:hover { background: var(--green-tint); color: var(--green-dark); border-color: var(--border); }
+.page-item.active .page-link { background: var(--green); border-color: var(--green); color: #fff; }
+.list-group-item { border-color: var(--border); }
+.alert { border-radius: 12px; border: 0; }
+
+/* ---------- Invoice / report documents keep a formal look ---------- */
+.invoice-sheet, #reportCapture { font-family: 'Roboto', Helvetica, Arial, sans-serif; }
+.invoice-total-box { background: var(--green-tint); border-color: var(--green); }
+
+@media (max-width: 991.98px) {
+  .app-sidebar { width: 280px; }
+  .app-content h4 { font-size: 1.3rem; }
+}
+
+/* =====================================================================
+   Part 3: printed / exported documents (Invoice + Reports).
+   Design is identical to the previous stable version (Roboto, sizes,
+   borders, table header style). Only the accent colour follows the theme.
+   ===================================================================== */
+.invoice-sheet, #reportCapture {
+  --border: #dfe4ea;
+  --text: #2b2f36;
+  --bs-border-color: #dee2e6;
+  --bs-body-color: #212529;
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
+  letter-spacing: normal;
+}
+.invoice-sheet { color: #2b2f36; }
+#reportCapture { font-size: 1rem; }
+.invoice-sheet h1, .invoice-sheet h2, .invoice-sheet h3, .invoice-sheet h4, .invoice-sheet h5, .invoice-sheet h6 { letter-spacing: normal; }
+.invoice-sheet { border-radius: 0; box-shadow: none; }
+.invoice-sheet .text-muted, #reportCapture .text-muted { color: var(--bs-secondary-color) !important; }
+.invoice-sheet .table, #reportCapture .table { --bs-table-border-color: #dee2e6; }
+.invoice-sheet .table thead th, #reportCapture .table thead th {
+  background: #f0f4ec;
+  color: #555566;
+  font-size: .85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  border-bottom-width: 1px;
+}
+.invoice-sheet .table td, .invoice-sheet .table th,
+#reportCapture .table td, #reportCapture .table th { vertical-align: middle; }
+.invoice-sheet .invoice-currency-table th, .invoice-sheet .invoice-currency-table td { font-size: .88rem; padding: 6px 8px; white-space: nowrap; }
+.invoice-sheet .invoice-currency-table thead th { font-size: .85rem; }
+.invoice-sheet .invoice-total-box { border: 1px solid var(--navy); background: #eaf1e3; padding: 10px 16px; border-radius: 6px; font-weight: 700; color: var(--navy); }
+
+#reportCapture.card {
+  border: 1px solid #dfe4ea;
+  border-radius: .375rem;
+  box-shadow: none;
+  overflow: visible;
+  background: #fff;
+}
+#reportCapture .card-header {
+  background: #fbfcfd;
+  border-bottom: 1px solid rgba(0,0,0,.175);
+  padding: .5rem 1rem;
+  font-weight: 600;
+  border-radius: calc(.375rem - 1px) calc(.375rem - 1px) 0 0;
+}
+
+@media (max-width: 576px) {
+  .invoice-sheet .invoice-currency-table th, .invoice-sheet .invoice-currency-table td { font-size: .78rem; padding: 5px 6px; }
+  .invoice-sheet .invoice-currency-table thead th { font-size: .78rem; }
+}
